@@ -34,7 +34,7 @@ import gradio as gr
 import gemini_gradio
 
 gr.load(
-    name='gemini-pro',
+    name='gemini-1.5-pro-002',
     src=gemini_gradio.registry,
 ).launch()
 ```
@@ -52,7 +52,7 @@ import gradio as gr
 import gemini_gradio
 
 gr.load(
-    name='gemini-pro',
+    name='gemini-1.5-pro-002',
     src=gemini_gradio.registry,
     title='Gemini-Gradio Integration',
     description="Chat with Gemini Pro model.",
@@ -71,16 +71,16 @@ import gemini_gradio
 
 with gr.Blocks() as demo:
     with gr.Tab("Gemini Pro"):
-        gr.load('gemini-pro', src=gemini_gradio.registry)
-    with gr.Tab("Gemini Pro Vision"):
-        gr.load('gemini-pro-vision', src=gemini_gradio.registry)
+        gr.load('gemini-1.5-pro-002', src=gemini_gradio.registry)
+    with gr.Tab("gemini-1.5-flash"):
+        gr.load('gemini-1.5-flash', src=gemini_gradio.registry)
 
 demo.launch()
 ```
 
 # Under the Hood
 
-The `gemini-gradio` Python library has two dependencies: `google-generativeai` and `gradio`. It defines a "registry" function `gemini_gradio.registry`, which takes in a model name and returns a Gradio app.
+The `gemini-gradio` Python library has two dependencies: `openai` and `gradio`. It defines a "registry" function `gemini_gradio.registry`, which takes in a model name and returns a Gradio app.
 
 # Supported Models in Gemini
 
