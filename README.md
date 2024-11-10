@@ -4,10 +4,19 @@ is a Python package that makes it very easy for developers to create machine lea
 
 # Installation
 
-You can install `gemini-gradio` directly using pip:
-
+1. Clone the repository:
 ```bash
-pip install gemini-gradio
+git clone https://github.com/AK391/gemini-gradio.git
+```
+
+2. Navigate to the project directory:
+```bash
+cd gemini-gradio
+```
+
+3. Install the package in editable mode:
+```bash
+pip install -e .
 ```
 
 # Basic Usage
