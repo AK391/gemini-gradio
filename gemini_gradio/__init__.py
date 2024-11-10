@@ -62,8 +62,7 @@ def registry(name: str, token: str | None = None, **kwargs):
         - name (str): The name of the model (e.g., "gpt-3.5-turbo" or "gemini-1.5-flash").
         - token (str, optional): The API key for OpenAI or Gemini.
     """
-    is_gemini = name.startswith("gemini-")
-    env_key = "GOOGLE_API_KEY" if is_gemini else "OPENAI_API_KEY"
+    env_key = "GEMINI_API_KEY"
     api_key = token or os.environ.get(env_key)
     if not api_key:
         raise ValueError(f"{env_key} environment variable is not set.")

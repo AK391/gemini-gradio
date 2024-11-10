@@ -21,10 +21,10 @@ pip install -e .
 
 # Basic Usage
 
-You'll need to set up your Google API key first:
+You'll need to set up your Gemini API key first:
 
-```
-export GOOGLE_API_KEY=<your token>
+```bash
+export GEMINI_API_KEY=<your token>
 ```
 
 Then in a Python file, write:
@@ -88,10 +88,10 @@ All chat API models supported by Google's Gemini are compatible with this integr
 
 -------
 
-Note: if you are getting an authentication error, then the Google API Client is not able to get the API token from the environment variable. You can set it in your Python session like this:
+Note: if you are getting an authentication error, then the Gemini API Client is not able to get the API token from the environment variable. You can set it in your Python session like this:
 
 ```python
 import os
 
-os.environ["GOOGLE_API_KEY"] = ...
+os.environ["GEMINI_API_KEY"] = ...
 ```
