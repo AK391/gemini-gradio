@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "openai-gradio"
+name = "gemini-gradio"
 version = "0.0.3"
 description = "A Python package for creating Gradio applications with OpenAI models"
 authors = [
@@ -22,12 +22,12 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/AK391/openai-gradio"
-repository = "https://github.com/AK391/openai-gradio"
+homepage = "https://github.com/AK391/gemini-gradio"
+repository = "https://github.com/AK391/gemini-gradio"
 
 [project.optional-dependencies]
 dev = ["pytest"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["openai_gradio"]
+packages = ["gemini_gradio"]
 

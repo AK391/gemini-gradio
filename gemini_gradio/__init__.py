@@ -9,7 +9,11 @@ __version__ = "0.0.3"
 def get_fn(model_name: str, preprocess: Callable, postprocess: Callable, api_key: str):
     def fn(message, history):
         inputs = preprocess(message, history)
-        client = OpenAI(api_key=api_key)
+        is_gemini = model_name.startswith("gemini-")
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://generativelanguage.googleapis.com/v1beta/" if is_gemini else None
+        )
         completion = client.chat.completions.create(
             model=model_name,
             messages=inputs["messages"],
@@ -52,15 +56,17 @@ def get_pipeline(model_name):
 
 def registry(name: str, token: str | None = None, **kwargs):
     """
-    Create a Gradio Interface for a model on OpenAI.
+    Create a Gradio Interface for a model on OpenAI or Gemini.
 
     Parameters:
-        - name (str): The name of the OpenAI model.
-        - token (str, optional): The API key for OpenAI.
+        - name (str): The name of the model (e.g., "gpt-3.5-turbo" or "gemini-1.5-flash").
+        - token (str, optional): The API key for OpenAI or Gemini.
     """
-    api_key = token or os.environ.get("OPENAI_API_KEY")
+    is_gemini = name.startswith("gemini-")
+    env_key = "GOOGLE_API_KEY" if is_gemini else "OPENAI_API_KEY"
+    api_key = token or os.environ.get(env_key)
     if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable is not set.")
+        raise ValueError(f"{env_key} environment variable is not set.")
 
     pipeline = get_pipeline(name)
     inputs, outputs, preprocess, postprocess = get_interface_args(pipeline)
