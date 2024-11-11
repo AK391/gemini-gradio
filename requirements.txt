@@ -1,2 +1,2 @@
-openai
-gradio>=5.0.5
+google-generativeai
+gradio>=5.5.0

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "gemini-gradio"
 version = "0.0.3"
-description = "A Python package for creating Gradio applications with OpenAI models"
+description = "A Python package for creating Gradio applications with Google Gemini models"
 authors = [
     { name = "AK", email = "ahsen.khaliq@gmail.com" }
 ]
