@@ -80,7 +80,7 @@ demo.launch()
 
 # Under the Hood
 
-The `gemini-gradio` Python library has two dependencies: `openai` and `gradio`. It defines a "registry" function `gemini_gradio.registry`, which takes in a model name and returns a Gradio app.
+The `gemini-gradio` Python library has two dependencies: `google-generativeai` and `gradio`. It defines a "registry" function `gemini_gradio.registry`, which takes in a model name and returns a Gradio app.
 
 # Supported Models in Gemini
 
