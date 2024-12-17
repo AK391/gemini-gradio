@@ -34,6 +34,34 @@ Run the Python file, and you should see a Gradio Interface connected to the Gemi
 
 ![ChatInterface](chatinterface.png)
 
+# Voice Chat
+
+You can enable voice chat with Gemini by setting the `enable_voice` parameter:
+
+```python
+import gradio as gr
+import gemini_gradio
+
+gr.load(
+    name='gemini-1.5-pro-002',
+    src=gemini_gradio.registry,
+    enable_voice=True
+).launch()
+```
+
+This will create a voice interface where you can have a spoken conversation with the Gemini model using your microphone.
+
+## Required API Keys for Voice Chat
+
+For voice chat functionality, you'll need:
+1. `GEMINI_API_KEY` - Your Google Gemini API key
+2. `GOOGLE_API_KEY` - Your Google API key (required for multimodal features)
+3. Twilio credentials for WebRTC functionality:
+   - `TWILIO_ACCOUNT_SID`
+   - `TWILIO_AUTH_TOKEN`
+
+Make sure these environment variables are set before using the voice chat feature.
+
 # Customization 
 
 Once you can create a Gradio UI from a Gemini endpoint, you can customize it by setting your own input and output components, or any other arguments to `gr.Interface`. For example, the screenshot below was generated with:
