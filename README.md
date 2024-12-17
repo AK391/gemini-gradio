@@ -71,7 +71,7 @@ import gradio as gr
 import gemini_gradio
 
 gr.load(
-    name='gemini-1.5-pro-002',
+    name='gemini-2.0-flash-exp',
     src=gemini_gradio.registry,
     title='Gemini-Gradio Integration',
     description="Chat with Gemini Pro model.",
