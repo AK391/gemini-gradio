@@ -1,5 +1,6 @@
 google-generativeai
-gradio>=5.5.0
+gradio>=5.9.1
 websockets
 numpy
 gradio-webrtc
+twilio
