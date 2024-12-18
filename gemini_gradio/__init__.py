@@ -446,7 +446,8 @@ def registry(
                             video = WebRTC(
                                 label="Stream",
                                 mode="send-receive",
-                                modality="video"
+                                modality="video",
+                                rtc_configuration=get_twilio_turn_credentials()
                             )
 
                         if enable_voice:
