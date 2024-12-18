@@ -24,6 +24,8 @@ dependencies = [
     "numpy",
     "websockets",
     "twilio",
+    "Pillow",
+    "opencv-python",
 ]
 
 [project.urls]

@@ -4,3 +4,5 @@ websockets
 numpy
 gradio-webrtc
 twilio
+Pillow
+opencv-python
