@@ -6,3 +6,4 @@ gradio-webrtc
 twilio
 Pillow
 opencv-python
+librosa

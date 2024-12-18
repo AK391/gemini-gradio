@@ -26,6 +26,7 @@ dependencies = [
     "twilio",
     "Pillow",
     "opencv-python",
+    "librosa",
 ]
 
 [project.urls]
