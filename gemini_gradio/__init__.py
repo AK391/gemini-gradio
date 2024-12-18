@@ -460,7 +460,7 @@ def registry(
 
                 if enable_video:
                     video.stream(
-                        fn=lambda frame: (gemini_handler.process_video_frame(detection(frame)), frame)[1],
+                        fn=lambda frame: (frame, detection(frame)),
                         inputs=[video],
                         outputs=[video],
                         time_limit=90,
