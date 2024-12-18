@@ -462,7 +462,8 @@ def registry(
                         fn=lambda frame: (gemini_handler.process_video_frame(detection(frame)), frame)[1],
                         inputs=[video],
                         outputs=[video],
-                        time_limit=90
+                        time_limit=90,
+                        concurrency_limit=10
                     )
 
                 if enable_voice:
