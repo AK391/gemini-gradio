@@ -7,6 +7,9 @@ import json
 import numpy as np
 import websockets.sync.client
 from gradio_webrtc import StreamHandler, WebRTC, get_twilio_turn_credentials
+import cv2
+import PIL.Image
+import io
 
 __version__ = "0.0.3"
 
@@ -40,6 +43,28 @@ class AudioProcessor:
         return np.frombuffer(audio_data, dtype=np.int16)
 
 
+def detection(frame, conf_threshold=0.3):
+    """Process video frame."""
+    try:
+        # Convert BGR to RGB
+        image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
+        # Create PIL Image
+        pil_image = PIL.Image.fromarray(image_rgb)
+        pil_image.thumbnail([1024, 1024])
+        
+        # Convert back to numpy array
+        processed_frame = np.array(pil_image)
+        
+        # Convert back to BGR for OpenCV
+        processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
+        
+        return processed_frame
+    except Exception as e:
+        print(f"Error processing frame: {e}")
+        return frame
+
+
 class GeminiHandler(StreamHandler):
     def __init__(self, expected_layout="mono", output_sample_rate=24000, output_frame_size=480) -> None:
         super().__init__(expected_layout, output_sample_rate, output_frame_size, input_sample_rate=24000)
@@ -47,13 +72,15 @@ class GeminiHandler(StreamHandler):
         self.ws = None
         self.all_output_data = None
         self.audio_processor = AudioProcessor()
+        self.current_frame = None
 
     def copy(self):
-        return GeminiHandler(
+        handler = GeminiHandler(
             expected_layout=self.expected_layout,
             output_sample_rate=self.output_sample_rate,
             output_frame_size=self.output_frame_size,
         )
+        return handler
 
     def _initialize_websocket(self):
         try:
@@ -73,6 +100,12 @@ class GeminiHandler(StreamHandler):
             print(f"Setup failed: {str(e)}")
             self.ws = None
 
+    def process_video_frame(self, frame):
+        self.current_frame = frame
+        _, buffer = cv2.imencode('.jpg', frame)
+        image_data = base64.b64encode(buffer).decode('utf-8')
+        return image_data
+
     def receive(self, frame: tuple[int, np.ndarray]) -> None:
         try:
             if not self.ws:
@@ -80,8 +113,28 @@ class GeminiHandler(StreamHandler):
 
             _, array = frame
             array = array.squeeze()
-            audio_message = self.audio_processor.encode_audio(array, self.output_sample_rate)
-            self.ws.send(json.dumps(audio_message))
+            
+            audio_data = self.audio_processor.encode_audio(array, self.output_sample_rate)
+            
+            message = {
+                "realtimeInput": {
+                    "mediaChunks": [
+                        {
+                            "mimeType": f"audio/pcm;rate={self.output_sample_rate}",
+                            "data": audio_data["realtimeInput"]["mediaChunks"][0]["data"],
+                        }
+                    ],
+                }
+            }
+            
+            if self.current_frame is not None:
+                image_data = self.process_video_frame(self.current_frame)
+                message["realtimeInput"]["mediaChunks"].append({
+                    "mimeType": "image/jpeg",
+                    "data": image_data
+                })
+
+            self.ws.send(json.dumps(message))
         except Exception as e:
             print(f"Error in receive: {str(e)}")
             if self.ws:
@@ -357,6 +410,7 @@ def registry(
     token: str | None = None, 
     examples: list | None = None,
     enable_voice: bool = False,
+    enable_video: bool = False,
     **kwargs
 ):
     env_key = "GEMINI_API_KEY"
@@ -373,31 +427,52 @@ def registry(
         kwargs["examples"] = formatted_examples
 
     if pipeline == "chat":
-        if enable_voice:
+        if enable_voice or enable_video:
             interface = gr.Blocks()
             with interface:
                 gr.HTML(
                     """
                     <div style='text-align: center'>
-                        <h1>Gemini Voice Chat</h1>
-                        <p>Chat with voice</p>
+                        <h1>Gemini Chat</h1>
                     </div>
                     """
                 )
                 
-                webrtc = WebRTC(
-                    label="Voice Chat",
-                    modality="audio",
-                    mode="send-receive",
-                    rtc_configuration=get_twilio_turn_credentials(),
-                )
-                webrtc.stream(
-                    GeminiHandler(), 
-                    inputs=[webrtc], 
-                    outputs=[webrtc], 
-                    time_limit=90, 
-                    concurrency_limit=10
-                )
+                gemini_handler = GeminiHandler()
+                
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        if enable_video:
+                            video = WebRTC(
+                                label="Stream",
+                                mode="send-receive",
+                                modality="video"
+                            )
+
+                        if enable_voice:
+                            audio = WebRTC(
+                                label="Voice Chat",
+                                modality="audio",
+                                mode="send-receive",
+                                rtc_configuration=get_twilio_turn_credentials(),
+                            )
+
+                if enable_video:
+                    video.stream(
+                        fn=lambda frame: (gemini_handler.process_video_frame(detection(frame)), frame)[1],
+                        inputs=[video],
+                        outputs=[video],
+                        time_limit=90
+                    )
+
+                if enable_voice:
+                    audio.stream(
+                        gemini_handler,
+                        inputs=[audio], 
+                        outputs=[audio], 
+                        time_limit=90, 
+                        concurrency_limit=10
+                    )
         else:
             interface = gr.ChatInterface(
                 fn=fn,
